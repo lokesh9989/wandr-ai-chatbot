@@ -1313,53 +1313,7 @@ const setGeminiKey = (v) => {
 };
 
 // ── Gemini API Call (robust version with fallback) ──────────────
-const callGeminiAI = async (messages, systemPrompt, onChunk, retryCount = 0) => {
-  const apiKey = getGeminiKey();
-  if (!apiKey) throw new Error("no_gemini_key");
-  if (typeof apiKey !== 'string' || apiKey.length < 10) throw new Error("invalid_api_key");
-
-  const promptText = `${systemPrompt}\n\n${messages.map(m => `${m.role === 'user' ? 'User' : 'Assistant'}: ${m.content}`).join("\n")}`;
-
-  const requestVariants = [
-    { body: { prompt: { text: promptText }, temperature: 0.7, maxOutputTokens: 2048, candidateCount: 1 } },
-    { body: { input: { text: promptText }, temperature: 0.7, maxOutputTokens: 2048, candidateCount: 1 } },
-    { body: { messages: messages.map(m => ({author: m.role === 'user' ? 'user' : 'assistant', content: [{type: 'text', text: m.content}]})), temperature: 0.7, maxOutputTokens: 2048, candidateCount: 1 } },
-  ];
-
-  const endpointChoices = [
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateText?key=${apiKey}`,
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateMessage?key=${apiKey}`,
-  ];
-
-     const attemptEndpoints = async () => {
-    for (const url of endpointChoices) {
-      for (const variant of requestVariants) {
-        try {
-          return await executeRequest(url, variant.body);
-        } catch (e) {
-          if (e.message === "api_404" || e.message === "api_400") {
-            continue;
-          }
-          throw e;
-        }
-      }
-    }
-    throw new Error("api_400");
-  };
-
-  const fullText = await attemptEndpoints();
-  if (!onChunk) return fullText;
-
-  let accumulated = "";
-  const chunkSize = 30;
-  for (let i = 0; i < fullText.length; i += chunkSize) {
-    accumulated += fullText.substring(i, i + chunkSize);
-    onChunk(accumulated);
-    await new Promise(r => setTimeout(r, 20));
-  }
-  return fullText;
-};
+ 
 
 // ── REAL DESTINATIONS VALIDATOR ──────────────────────────────────
 const REAL_DESTINATIONS = new Set([
