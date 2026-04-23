@@ -1707,21 +1707,14 @@ function ChatPage({user,chats,setChats,plans,setPlans}) {
   const [animId,    setAnimId]   = useState(null);
   const [banner,    setBanner]   = useState(null);
   const [search,    setSearch]   = useState("");
-  const [provider,  setProvider] = useState("Gemini");
-  const [apiKeys,   setApiKeys]  = useState(()=>({gemini: getGeminiKey()}));
-  const [showKeys,  setShowKeys] = useState(false);
-  const [testingKey, setTestingKey] = useState(false);
-  const [keyTestResult, setKeyTestResult] = useState(null);
+   
   const msgsRef  = useRef([]);
   const chatsRef = useRef(chats);
   const bottomRef= useRef(null);
   const taRef    = useRef(null);
   const requestControllerRef = useRef(null);
 
-  const updateKey = (v) => {
-    setGeminiKey(v);
-    setApiKeys(k=>({...k, gemini: v}));
-  };
+  
 
   const cancelRequest = () => {
     if (requestControllerRef.current) {
