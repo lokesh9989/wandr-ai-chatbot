@@ -1301,17 +1301,7 @@ NEVER:
 
 
 // ── AI provider state (Gemini ONLY) ─────────────────────────────
-let _geminiKey = "";
-try {
-  const saved = JSON.parse(localStorage.getItem("alfa_gemini_key")||"{}");
-  _geminiKey = saved.key || "";
-} catch(e){}
-const getGeminiKey = () => _geminiKey;
-const setGeminiKey = (v) => {
-  _geminiKey = v;
-  try { localStorage.setItem("alfa_gemini_key", JSON.stringify({key: v})); } catch(e){}
-};
-
+ 
 // ── Gemini API Call (robust version with fallback) ──────────────
  
 
